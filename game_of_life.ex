@@ -30,6 +30,10 @@ defmodule Output do
 end
 
 defmodule Board do
+  def create_random_board(size) do
+    Enum.map(0..size-1, fn(x) -> random_inner_array(size) end)
+  end
+
   def create_initial_board(size) do
     Enum.map(0..size-1, fn(x) -> generate_inner_array(x, size) end)
   end
@@ -50,6 +54,14 @@ defmodule Board do
     (getValue(board, x, y) && (Enum.count(answer) == 2 || Enum.count(answer) == 3) && Enum.count(answer) < 4) || (Enum.count(answer) == 3)
   end
 
+  def random_inner_array(size) do
+    if(:random.uniform >= 0.5) do
+      Enum.map(1..size,fn(_) -> true end)
+    else
+      Enum.map(1..size,fn(_) -> false end)
+    end
+  end
+
   defp generate_inner_array(x, size) do
     if(x==0) do
       Enum.map(1..size,fn(_) -> true end)
@@ -59,7 +71,7 @@ defmodule Board do
   end
 end
 
-Game.start(Board.create_initial_board(30))
+Game.start(Board.create_random_board(30))
 
 ExUnit.start
 
