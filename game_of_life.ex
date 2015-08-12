@@ -66,6 +66,7 @@ defmodule Board do
   end
 
   def random_inner_array(size) do
+    :random.seed(:erlang.now())
     if(:random.uniform >= 0.5) do
       Enum.map(0..size-1, fn(_) -> true end)
     else
