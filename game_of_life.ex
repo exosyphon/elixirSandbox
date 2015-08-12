@@ -14,9 +14,9 @@ defmodule Output do
 
   defp print(board, x, y) do
     if(Board.getValue(board, x, y)) do
-      :io.format "X"
+      :io.format " X "
     else
-      :io.format "O"
+      :io.format " O "
     end
 
     board_size = Board.get_board_size(board)
