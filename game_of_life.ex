@@ -1,7 +1,7 @@
 defmodule Game do
   def start(initial_board) do
     Output.print_board(initial_board)
-    new_board = Board.applyRules(initial_board)
+    new_board = Board.appy_rules(initial_board)
     :timer.sleep(1000)
     start(new_board)
   end
@@ -13,7 +13,7 @@ defmodule Output do
   end
 
   defp print(board, x, y) do
-    if(Board.getValue(board, x, y)) do
+    if(Board.get_value(board, x, y)) do
       :io.format " X "
     else
       :io.format " O "
@@ -42,18 +42,18 @@ defmodule Board do
     Enum.map(0..size-1, fn(x) -> generate_inner_array(x, size) end)
   end
 
-  def applyRules(board) do
+  def appy_rules(board) do
     Enum.map(0..get_board_size(board), fn(x) -> Enum.map(0..get_board_size(board), fn(y) -> check_rules(board, x, y)  end)  end)
   end
  
-  def getValue(board, x, y) do
+  def get_value(board, x, y) do
     Enum.at(board, x) |> Enum.at(y)
   end
 
   defp check_rules(board, x, y) do
     coordinates = [[x-1,y],[x-1,y-1],[x-1,y+1],[x,y+1],[x,y-1],[x+1,y+1],[x+1,y],[x+1,y-1]]
     valid_coordinates = Enum.filter(coordinates,fn(x) -> ( (Enum.at(x,0) >= 0 && Enum.at(x,0) <= get_board_size(board) ) && (Enum.at(x,1) >= 0 && Enum.at(x,1) <= get_board_size(board))) end)
-    neighbors_alive = Enum.filter(valid_coordinates, fn(x) -> getValue(board,Enum.at(x,0), Enum.at(x,1)) == true end)
+    neighbors_alive = Enum.filter(valid_coordinates, fn(x) -> get_value(board,Enum.at(x,0), Enum.at(x,1)) == true end)
     cell_dies(board, x, y, neighbors_alive) || cell_reproduces(neighbors_alive)
   end
 
@@ -62,7 +62,7 @@ defmodule Board do
   end
 
   defp cell_dies(board, x, y, neighbors_alive) do
-    getValue(board, x, y) && Enum.count(neighbors_alive) > 1 && Enum.count(neighbors_alive) < 4
+    get_value(board, x, y) && Enum.count(neighbors_alive) > 1 && Enum.count(neighbors_alive) < 4
   end
 
   def random_inner_array(size) do
@@ -96,12 +96,12 @@ defmodule GameOfLifeTest do
 
   test 'applies the rules to an initial board' do
     initial_board = [[false, false, true],[false, false, false],[false, true, false]]
-    assert Board.applyRules(initial_board) == [[false, false, false], [false, false, false], [false, false, false]] 
+    assert Board.appy_rules(initial_board) == [[false, false, false], [false, false, false], [false, false, false]] 
   end
   
   test 'keeps cells alive when applying the rules' do
     initial_board = [[true, true, true],[true, true, true],[false, true, false]]
-    assert Board.applyRules(initial_board) == [[true, false, true], [false, false, false], [true, true, true]]
+    assert Board.appy_rules(initial_board) == [[true, false, true], [false, false, false], [true, true, true]]
   end
 end
 
