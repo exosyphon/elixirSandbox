@@ -1,19 +1,22 @@
 defmodule Braille do
   def call(phrase) do
-    String.codepoints(phrase) |> Enum.map(fn x -> Translate.translate_letter x end)
+    String.codepoints(phrase) |> Enum.reduce([], fn(x, acc) -> 
+      acc = [Translate.add_cap(x, String.upcase(x)) | acc]
+      [Translate.translate_letter(String.downcase(x)) | acc]
+    end) |> Enum.reverse |> Enum.reject(&(is_nil(&1)))
   end
 end
 
 defmodule Translate do
   def translate_letter(letter) do
-    cond do
-      String.match?(letter, ~r/^\p{Lu}$/u) -> add_capital(letter) 
-      true -> map(letter)
-    end
+    map(letter)
   end
-
-  defp add_capital(letter) do
-    [[["", ""], ["", ""], ["", "X"]], map(String.downcase(letter))]
+  
+  def add_cap(capital, capital) do
+      [["", ""], ["", ""], ["", "X"]]
+  end
+  
+  def add_cap(not_capital, capital) do
   end
 
   defp map(letter) do
@@ -60,7 +63,7 @@ defmodule BrailleTest do
   end
 
   test "translates a capital letter to braille" do
-    assert Translate.translate_letter("A") == [[["", ""], ["", ""], ["", "X"]], [["X", ""], ["", ""], ["", ""]]]
+    assert Braille.call("A") == [[["", ""], ["", ""], ["", "X"]], [["X", ""], ["", ""], ["", ""]]]
   end
 
   test "can translate an entire lowercase word" do
