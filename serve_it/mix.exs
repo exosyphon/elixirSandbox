@@ -30,6 +30,6 @@ defmodule ServeIt.Mixfile do
       [{:cowboy, "~> 1.0.0"},
        {:plug, "~> 1.0"},
        {:sqlite_ecto, "~> 1.0.0"},
-       {:ecto, "~> 1.0"}]
+       {:ecto, "~> 1.1.2"}]
   end
 end

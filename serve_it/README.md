@@ -1,4 +1,6 @@
 ServeIt
 =======
 
-** TODO: Add description **
+iex -S mix
+ServeIt.Repo.start_link
+{:ok, _} = Plug.Adapters.Cowboy.http ServeIt, []
