@@ -1,8 +1,8 @@
 defmodule Braille do
   def call(phrase) do
     String.codepoints(phrase) |> Enum.reduce([], fn(x, acc) -> 
-      acc = [Translate.add_cap(x, String.upcase(x)) | acc]
-      [Translate.translate_letter(String.downcase(x)) | acc]
+    acc = [Translate.add_cap(x, String.upcase(x)) | acc]
+    [Translate.translate_letter(String.downcase(x)) | acc]
     end) |> Enum.reverse |> Enum.reject(&(is_nil(&1)))
   end
 end
@@ -11,11 +11,15 @@ defmodule Translate do
   def translate_letter(letter) do
     map(letter)
   end
-  
-  def add_cap(capital, capital) do
-      [["", ""], ["", ""], ["", "X"]]
+
+  def add_cap(" ", " ") do
+    [["", ""], ["", ""], ["", ""]]
   end
-  
+
+  def add_cap(capital, capital) do
+    [["", ""], ["", ""], ["", "X"]]
+  end
+
   def add_cap(not_capital, capital) do
   end
 
@@ -71,7 +75,23 @@ defmodule BrailleTest do
   end
 
   test "can translate an entire word" do
-    assert Braille.call("Hi") == [[["", ""], ["", ""], ["", "X"]], [["X", ""], ["X", "X"], ["", ""]], [["", "X"], ["X", ""], ["", ""]]]
+    assert Braille.call("Hi") == [
+      [["", ""], ["", ""], ["", "X"]], 
+      [["X", ""], ["X", "X"], ["", ""]], [["", "X"], ["X", ""], ["", ""]]
+    ]
+  end
+
+  test "can translate an entire sentence" do
+    assert Braille.call("Hi there") == [
+      [["", ""], ["", ""], ["", "X"]], [["X", ""], ["X", "X"], ["", ""]], 
+      [["", "X"], ["X", ""], ["", ""]],
+      [["", ""], ["", ""], ["", ""]], 
+      [["", "X"], ["X", "X"], ["X", ""]],
+      [["X", ""], ["X", "X"], ["", ""]],
+      [["X", ""], ["", "X"], ["", ""]],
+      [["X", ""], ["X", "X"], ["X", ""]],
+      [["X", ""], ["", "X"], ["", ""]],
+    ]
   end
 end
-
+[["", ""], ["", ""], ["", "X"]] 
