@@ -35,7 +35,7 @@ defmodule Board do
   end
 
   def create_random_board(size) do
-    Enum.map(0..size-1, fn(x) -> random_inner_array(size) end)
+    Enum.map(0..size-1, fn(_) -> random_inner_array(size) end)
   end
 
   def create_initial_board(size) do
@@ -54,14 +54,14 @@ defmodule Board do
     coordinates = [[x-1,y],[x-1,y-1],[x-1,y+1],[x,y+1],[x,y-1],[x+1,y+1],[x+1,y],[x+1,y-1]]
     valid_coordinates = Enum.filter(coordinates,fn(x) -> ( (Enum.at(x,0) >= 0 && Enum.at(x,0) <= get_board_size(board) ) && (Enum.at(x,1) >= 0 && Enum.at(x,1) <= get_board_size(board))) end)
     neighbors_alive = Enum.filter(valid_coordinates, fn(x) -> get_value(board,Enum.at(x,0), Enum.at(x,1)) == true end)
-    cell_dies(board, x, y, neighbors_alive) || cell_reproduces(neighbors_alive)
+    cell_still_alive?(board, x, y, neighbors_alive) || cell_becomes_alive?(neighbors_alive)
   end
 
-  defp cell_reproduces(neighbors_alive) do
+  defp cell_becomes_alive?(neighbors_alive) do
     Enum.count(neighbors_alive) == 3
   end
 
-  defp cell_dies(board, x, y, neighbors_alive) do
+  defp cell_still_alive?(board, x, y, neighbors_alive) do
     get_value(board, x, y) && Enum.count(neighbors_alive) > 1 && Enum.count(neighbors_alive) < 4
   end
 
@@ -102,6 +102,45 @@ defmodule GameOfLifeTest do
   test 'keeps cells alive when applying the rules' do
     initial_board = [[true, true, true],[true, true, true],[false, true, false]]
     assert Board.appy_rules(initial_board) == [[true, false, true], [false, false, false], [true, true, true]]
+  end
+
+  test 'kills cells when overpopulation' do
+    initial_board = [
+      [true, false, true],
+      [true, true, true],
+      [false, false, false],
+    ]
+    assert Board.appy_rules(initial_board) == [
+      [true, false, true],
+      [true, false, true],
+      [false, true, false],
+    ]
+  end
+ 
+  test 'kills cells when underpopulation' do
+    initial_board = [
+      [false, false, false],
+      [false, true, false],
+      [false, false, false],
+    ]
+    assert Board.appy_rules(initial_board) == [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ]
+  end
+ 
+  test 'reproduces when cell has 3 alive neighbors' do
+    initial_board = [
+      [false, true, false],
+      [true, true, false],
+      [false, false, false],
+    ]
+    assert Board.appy_rules(initial_board) == [
+      [true, true, false],
+      [true, true, false],
+      [false, false, false],
+    ]
   end
 end
 
